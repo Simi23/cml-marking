@@ -55,3 +55,18 @@ An example configuration can be found here:
   ]
 }
 ```
+
+# Other info
+
+Todos:
+
+- negative expected result
+- parse in addition to learn
+
+Important links:
+
+https://pubhub.devnetcloud.com/media/genie-feature-browser/docs/#/models
+https://pubhub.devnetcloud.com/media/genie-feature-browser/docs/#/parsers
+https://developer.cisco.com/docs/genie-docs/
+https://questionary.readthedocs.io/en/stable/pages/api_reference.html#questionary.Choice
+https://rich.readthedocs.io/en/latest/appendix/colors.html
