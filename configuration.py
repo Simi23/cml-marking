@@ -17,15 +17,16 @@ class MultiSearchCondition(str, Enum):
 
 class ExpectedResult(BaseModel):
     description: Optional[str] = Field(
-        description="Description of the expected result which is always printed with the aspect."
+        None,
+        description="Description of the expected result which is always printed with the aspect.",
     )
 
     single: Optional[str] = Field(
-        description="A single value to search in the gathered info."
+        None, description="A single value to search in the gathered info."
     )
 
     multiple: Optional[List[str]] = Field(
-        description="A list of values to search in the gathered info."
+        None, description="A list of values to search in the gathered info."
     )
     condition: Optional[MultiSearchCondition] = Field(
         MultiSearchCondition.AllMatch,
@@ -47,7 +48,8 @@ class ExpectedResult(BaseModel):
 
 class CheckCommand(BaseModel):
     device_name: Optional[str] = Field(
-        description="The display name of the device to run the command on. Either this or `random_devices` must be defined!"
+        None,
+        description="The display name of the device to run the command on. Either this or `random_devices` must be defined!",
     )
     model: str = Field(
         description="The model to learn from the device. Find available models at [https://pubhub.devnetcloud.com/media/genie-feature-browser/docs/#/models]"
@@ -70,7 +72,8 @@ class CheckCommand(BaseModel):
     )
 
     random_devices: Optional[List[str]] = Field(
-        description="A list of devices to choose from to randomly run this command. Either this or `device_name` must be defined! If this is defined, `device_name` is ignored!"
+        None,
+        description="A list of devices to choose from to randomly run this command. Either this or `device_name` must be defined! If this is defined, `device_name` is ignored!",
     )
     random_device_count: Optional[int] = Field(
         1, description="How many random devices to select from the list."
@@ -91,7 +94,9 @@ class Aspect(BaseModel):
         description="Aspect ID, e.g. `C1.1`",
     )
     description: str = Field(description="Description of the aspect to print")
-    extra_description: Optional[str] = Field(description="Extra description to print")
+    extra_description: Optional[str] = Field(
+        None, description="Extra description to print"
+    )
     check_commands: List[CheckCommand] = Field(
         description="The commands to run for this aspect"
     )
