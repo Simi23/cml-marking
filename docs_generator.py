@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from configuration import AppConfig
 
 
-def generate_markdown(model: Type[BaseModel], level: int = 2):
+def generate_markdown(model: Type[BaseModel], level: int = 1):
     """
     Recursively generates a Markdown reference for a Pydantic model.
     """
@@ -38,6 +38,9 @@ def generate_markdown(model: Type[BaseModel], level: int = 2):
         if target_model:
             sub_models.append(target_model)
             type_display = f"[{type_display}](#{target_model.__name__.lower()})"
+        else:
+            # Clean up type display for markdown
+            type_display = f"`{type_display}`"
 
         # Extract metadata
         required = "✅" if field.is_required() else "❌"
@@ -47,9 +50,6 @@ def generate_markdown(model: Type[BaseModel], level: int = 2):
             else "-"
         )
         description = field.description if field.description else "-"
-
-        # Clean up type display for markdown
-        type_display = f"`{type_display}`"
 
         print(
             f"| **{name}** | {type_display} | {required} | {default} | {description} |"
