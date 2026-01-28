@@ -38,6 +38,8 @@ class ExpectedResult(BaseModel):
         description="If true, the provided search string has to match the whole field that is checked.",
     )
 
+    search_filter: Optional[str] = Field("")
+
     search_in_key: Optional[bool] = Field(
         True, description="Whether to search in keys of the gathered info."
     )
@@ -51,9 +53,9 @@ class CheckCommand(BaseModel):
         None,
         description="The display name of the device to run the command on. Either this or `random_devices` must be defined!",
     )
-    model: str = Field(
-        description="The model to learn from the device. Find available models at [https://pubhub.devnetcloud.com/media/genie-feature-browser/docs/#/models]"
-    )
+    model: Optional[str] = Field("")
+    parser: Optional[str] = Field("")
+    command: Optional[str] = Field("")
     result_filter: Optional[List[List[str] | str]] = Field(
         ["**"],
         description="A list of glob filters to apply on the model. Multiple search queries are merged together. Bash glob syntax is supported. The default separator is `/`, if you want to use it as text, provide the path as an array instead, e.g. `['GigabitEthernet0/1', 'oper_status']`",
@@ -67,7 +69,7 @@ class CheckCommand(BaseModel):
         True, description="Update the cache with the result of this command"
     )
 
-    expected_result: ExpectedResult = Field(
+    expected_results: List[ExpectedResult] = Field(
         description="The expected result of this command",
     )
 

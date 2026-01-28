@@ -1,10 +1,15 @@
-from rich.console import Console
-from rich.text import Text
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.align import Align
+from rich import box
 from virl2_client.virl2_client import Lab
 import questionary
 from questionary import Choice
 import configuration
 from configuration import Aspect, AspectType
+from rich.markdown import Markdown
+import json
+from typing import LiteralString, Literal
 
 
 def aspect_type(input: AspectType) -> str:
@@ -29,26 +34,53 @@ class Menu:
         result = questionary.select("Choose the lab you want to mark!", choices).ask()
         return result
 
-    def separator(self, length, char="="):
-        self.console.print(char * length, style="bold bright_white")
-
-    def length(self, text):
-        return Text.from_markup(text).cell_len
-
     def announce_sc(self, sc_name: str):
-        text = f"|  Sub criterion [bold aquamarine3]{sc_name}[/bold aquamarine3]  |"
-        length = self.length(text)
-        self.separator(length)
-        self.console.print(text)
-        self.separator(length)
+        text = f"Sub criterion [bold aquamarine3]{sc_name}[/bold aquamarine3]"
+        self.console.print(Align(Panel.fit(text, box=box.DOUBLE), "center"))
         self.console.line(1)
 
     def announce_aspect(self, aspect: configuration.Aspect):
-        text1 = f"  Aspect [yellow]{aspect.aspect_id}[/yellow] - [orange1]{aspect_type(aspect.aspect_type)}[/orange1]  "
-        text2 = f"  [yellow]{aspect.description}[/yellow]  "
-        length = max(self.length(text1), self.length(text2))
-        self.separator(length, "-")
-        self.console.print(text1)
-        self.console.print(text2)
-        self.separator(length, "-")
-        return
+        text1 = f"Aspect [yellow]{aspect.aspect_id}[/yellow] - [orange1]{aspect_type(aspect.aspect_type)}[/orange1]"
+        text2 = f"[yellow]{aspect.description}[/yellow]"
+        self.console.print(Panel.fit(text2, title=text1, title_align="left"))
+
+    def announce_check_command(
+        self,
+        check_command: configuration.CheckCommand,
+        index: int,
+        subindex: int,
+        run_result: tuple[str, str, str, dict],
+        marks: list[int],
+    ):
+        result_text = ["[red3]FAIL[/red3]", "[green4]PASS[/green4]"]
+
+        title = f"Check [dodger_blue1]#{index + 1}.{subindex + 1}[/dodger_blue1]"
+        text = f"""Device: [cyan3]{run_result[0]}[/cyan3]
+Check type: [cyan3]{run_result[1]}[/cyan3]
+Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'[/grey70]
+Expected results:
+"""
+        for i, er in enumerate(check_command.expected_results):
+            text += f" - {result_text[marks[i]]} {er.description}\n"
+
+        panel = Group(
+            text,
+            Panel.fit(
+                json.dumps(run_result[3], indent=4),
+                title="Output",
+                padding=(0, 4, 0, 1),
+            ),
+        )
+        self.console.print(Panel.fit(panel, title=title))
+
+    def aspect_finish(self) -> Literal["continue", "retry"]:
+        choices = [
+            Choice("Continue", "continue", shortcut_key="c"),
+            Choice("Rerun aspect", "retry", shortcut_key="r"),
+        ]
+
+        result = questionary.select(
+            "Aspect finished", choices=choices, use_shortcuts=True
+        ).ask()
+
+        return result

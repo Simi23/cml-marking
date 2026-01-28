@@ -43,10 +43,12 @@ An example configuration can be found here:
               "device_name": "ISP",
               "model": "interface",
               "result_filter": [["GigabitEthernet0/1", "oper_status"]],
-              "expected_result": {
-                "description": "Interface is up",
-                "single": "up"
-              }
+              "expected_result": [
+                {
+                  "description": "Interface is up",
+                  "single": "up"
+                }
+              ]
             }
           ]
         }
@@ -61,7 +63,7 @@ An example configuration can be found here:
 Todos:
 
 - negative expected result
-- parse in addition to learn
+- parse+raw in addition to learn
 
 Important links:
 
