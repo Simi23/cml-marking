@@ -56,6 +56,8 @@ class Menu:
     def announce_aspect(self, aspect: configuration.Aspect):
         text1 = f"Aspect [yellow]{aspect.aspect_id}[/yellow] - [orange1]{aspect_type(aspect.aspect_type)}[/orange1]"
         text2 = f"[yellow]{aspect.description}[/yellow]"
+        if aspect.extra_description:
+            text2 += f"\n{aspect.extra_description}"
         self.console.print(Panel.fit(text2, title=text1, title_align="left"))
 
     def announce_check_command(

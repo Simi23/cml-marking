@@ -56,6 +56,7 @@
 | **multiple**        | `List[str]`            |    ❌    | -       | A list of values to search in the gathered info.                                                                                 |
 | **condition**       | `MultiSearchCondition` |    ❌    | `all`   | Mode for searching multiple values. `all`: All values must be matched to pass the aspect; `any`: Any match will pass the aspect. |
 | **exact**           | `bool`                 |    ❌    | True    | If true, the provided search string has to match the whole field that is checked.                                                |
-| **search_filter**   | `str`                  |    ❌    | -       | A glob filter to apply on the output of the command. If provided, the search will only happen on the leaf found by the filter.   |
+| **negate**          | `bool`                 |    ❌    | False   | Negate the result. Useful for checking the absence of a given string.                                                            |
+| **search_filter**   | `List[str] \| str`     |    ❌    | -       | A glob filter to apply on the output of the command. If provided, the search will only happen on the leaf found by the filter.   |
 | **search_in_key**   | `bool`                 |    ❌    | True    | Whether to search in keys of the gathered info.                                                                                  |
 | **search_in_value** | `bool`                 |    ❌    | True    | Whether to search in the values of the gathered info.                                                                            |

@@ -32,13 +32,14 @@ class ExpectedResult(BaseModel):
         MultiSearchCondition.AllMatch,
         description="Mode for searching multiple values. `all`: All values must be matched to pass the aspect; `any`: Any match will pass the aspect.",
     )
+    negate: Optional[bool] = Field(False, description="Negate the result.")
 
     exact: Optional[bool] = Field(
         True,
         description="If true, the provided search string has to match the whole field that is checked.",
     )
 
-    search_filter: Optional[str] = Field("")
+    search_filter: Optional[List[str] | str] = Field("")
 
     search_in_key: Optional[bool] = Field(
         True, description="Whether to search in keys of the gathered info."
