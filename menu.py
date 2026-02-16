@@ -10,6 +10,7 @@ from configuration import Aspect, AspectType
 from rich.markdown import Markdown
 import json
 from typing import LiteralString, Literal
+from rich_pyfiglet import RichFiglet
 
 
 def aspect_type(input: AspectType) -> str:
@@ -27,8 +28,21 @@ class Menu:
         self.console = Console()
         self.console.clear()
 
-    def choose_labs(self, labs: list[Lab]):
+    def main_title(self):
         self.console.clear()
+        self.console.line(1)
+        figlet = RichFiglet(
+            "CML Marking",
+            colors=["#45bae9", "#45bae9", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+            horizontal=True,
+            font="ansi_shadow",
+        )
+        # title = "[bold turquoise2]CML[/bold turquoise2] [bold bright_white]Marking[/bold bright_white]"
+        self.console.print(
+            Align(Panel.fit(figlet, box=box.DOUBLE, padding=(1, 4)), "center")
+        )
+
+    def choose_labs(self, labs: list[Lab]):
         self.console.line(2)
         choices = [Choice(x.title, x.id) for x in labs]
         result = questionary.select("Choose the lab you want to mark!", choices).ask()
@@ -58,7 +72,7 @@ class Menu:
         text = f"""Device: [cyan3]{run_result[0]}[/cyan3]
 Check type: [cyan3]{run_result[1]}[/cyan3]
 Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'[/grey70]
-Expected results:
+{'Expected results:' if len(check_command.expected_results) > 0 else ''}
 """
         for i, er in enumerate(check_command.expected_results):
             text += f" - {result_text[marks[i]]} {er.description}\n"

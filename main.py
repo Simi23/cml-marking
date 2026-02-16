@@ -2,8 +2,6 @@ from cml_client import CmlClient
 from configuration import load_config
 from menu import Menu
 import mark
-import json
-import logging
 import log_clean
 
 
@@ -14,6 +12,7 @@ def main():
     client = CmlClient(config.cml.url, config.cml.username, config.cml.password)
     menu = Menu()
 
+    menu.main_title()
     chosen_lab_id = menu.choose_labs(client.list_labs())
 
     print(f"User chose lab {chosen_lab_id}")
