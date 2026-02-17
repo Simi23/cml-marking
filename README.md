@@ -60,11 +60,6 @@ An example configuration can be found here:
 
 # Other info
 
-Todos:
-
-- negative expected result
-- parse+raw in addition to learn
-
 Important links:
 
 https://pubhub.devnetcloud.com/media/genie-feature-browser/docs/#/models
