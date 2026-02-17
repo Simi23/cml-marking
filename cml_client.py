@@ -17,6 +17,7 @@ class CmlClient:
         self._cml_username = username
         self._cml_password = password
         self._client = ClientLibrary(url, username, password, ssl_verify=ssl)
+        dpath.options.ALLOW_EMPTY_STRING_KEYS = True
         return
 
     @property
@@ -104,7 +105,10 @@ class CmlClient:
         all_output = {}
 
         for line in filter:
-            dpath.merge(all_output, dict(dpath.search(output, line)))
+            current = json.loads(
+                json.dumps(dpath.search(json.loads(json.dumps(output)), line))
+            )
+            dpath.merge(all_output, current)
 
         return all_output
 
@@ -159,7 +163,10 @@ class CmlClient:
         all_output = dict()
 
         for line in filter:
-            current = json.loads(json.dumps(dpath.search(output, line)))
+            # print(output)
+            current = json.loads(
+                json.dumps(dpath.search(json.loads(json.dumps(output)), line))
+            )
             # print(json.dumps(current, indent=2))
             dpath.merge(all_output, current)
 

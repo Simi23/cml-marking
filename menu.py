@@ -82,7 +82,11 @@ Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'
         panel = Group(
             text,
             Panel.fit(
-                json.dumps(run_result[3], indent=4),
+                (
+                    run_result[3]["output"]
+                    if check_command.command
+                    else json.dumps(run_result[3], indent=4)
+                ),
                 title="Output",
                 padding=(0, 4, 0, 1),
             ),

@@ -28,6 +28,9 @@ def main():
         is_retry = False
         while i_aspect < aspect_count:
             aspect = sub_criterion.aspects[i_aspect]
+            menu.console.clear()
+            menu.console.line(2)
+            menu.announce_sc(f"{sub_criterion.sc_id} - {sub_criterion.name}")
             menu.announce_aspect(aspect)
             check_command_count = len(aspect.check_commands)
             i_check_command = 0
