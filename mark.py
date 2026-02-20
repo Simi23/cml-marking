@@ -5,16 +5,14 @@ import random
 from configuration import MultiSearchCondition
 
 
-def run_check(
-    client: CmlClient, cc: configuration.CheckCommand, is_retry: bool = False
-):
+def generate_runs(cc: configuration.CheckCommand, is_retry: bool = False):
     devices: list[str] = []
-    runs: list[tuple[str, str, str, dict]] = []
+    runs: list[tuple[str, str, str, list[list[str] | str], bool, bool]] = []
 
     result_filter = cc.result_filter or ["**"]
 
-    update_cache = True
     use_cache = True
+    update_cache = True
 
     if cc.use_cache is not None:
         use_cache = cc.use_cache
@@ -31,29 +29,49 @@ def run_check(
 
     for d in devices:
         if cc.model:
+            runs.append((d, "model", cc.model, result_filter, use_cache, update_cache))
+        elif cc.parser:
+            runs.append(
+                (d, "parser", cc.parser, result_filter, use_cache, update_cache)
+            )
+        elif cc.command:
+            runs.append(
+                (d, "command", cc.command, result_filter, use_cache, update_cache)
+            )
+    return runs
+
+
+def perform_runs(
+    client: CmlClient,
+    runs: list[tuple[str, str, str, list[list[str] | str], bool, bool]],
+):
+    results: list[tuple[str, str, str, dict]] = []
+    for run in runs:
+        d, mode, mode_command, result_filter, use_cache, update_cache = run
+        if mode == "model":
             result = client.learn_device_info(
                 d,
-                cc.model,
+                mode_command,
                 filter=result_filter,
                 use_cache=use_cache,
                 update_cache=update_cache,
             )
-            runs.append((d, "model", cc.model, result))
-        elif cc.parser:
+            results.append((d, "model", mode_command, result))
+        elif mode == "parser":
             result = client.parse_device_info(
                 d,
-                cc.parser,
+                mode_command,
                 filter=result_filter,
                 use_cache=use_cache,
                 update_cache=update_cache,
             )
-            runs.append((d, "parser", cc.parser, result))
-        elif cc.command:
+            results.append((d, "parser", mode_command, result))
+        elif mode == "command":
             result = client.run_device_command(
-                d, cc.command, use_cache=use_cache, update_cache=update_cache
+                d, mode_command, use_cache=use_cache, update_cache=update_cache
             )
-            runs.append((d, "command", cc.command, result))
-    return runs
+            results.append((d, "command", mode_command, result))
+    return results
 
 
 def perform_mark(result: dict, cc: configuration.CheckCommand) -> list[int]:

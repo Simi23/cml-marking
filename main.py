@@ -37,13 +37,30 @@ def main():
 
             while i_check_command < check_command_count:
                 check_command = aspect.check_commands[i_check_command]
-                with menu.console.status("Running command(s) on device(s)..."):
-                    results = mark.run_check(client, check_command, is_retry)
-                for subindex, run_result in enumerate(results):
-                    marked = mark.perform_mark(run_result[3], check_command)
-                    menu.announce_check_command(
-                        check_command, i_check_command, subindex, run_result, marked
+                scheduled_runs = mark.generate_runs(check_command, is_retry)
+                try:
+                    with menu.console.status("Running command(s) on device(s)..."):
+                        results = mark.perform_runs(client, scheduled_runs)
+                except Exception as e:
+                    menu.announce_check_command_error(
+                        check_command, i_check_command, subindex, scheduled_runs, e
                     )
+                    i_check_command += 1
+                    continue
+                for subindex, run_result in enumerate(results):
+                    try:
+                        marked = mark.perform_mark(run_result[3], check_command)
+                        menu.announce_check_command(
+                            check_command, i_check_command, subindex, run_result, marked
+                        )
+                    except Exception as e:
+                        menu.announce_mark_error(
+                            check_command,
+                            i_check_command,
+                            subindex,
+                            scheduled_runs[subindex],
+                            e,
+                        )
 
                 i_check_command += 1
 

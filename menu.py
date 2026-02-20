@@ -93,6 +93,75 @@ Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'
         )
         self.console.print(Panel.fit(panel, title=title))
 
+    def announce_check_command_error(
+        self,
+        check_command: configuration.CheckCommand,
+        index: int,
+        subindex: int,
+        scheduled_runs: list[tuple[str, str, str, list[list[str] | str], bool, bool]],
+        e: Exception,
+    ):
+        _, mode, mode_command, _, _, _ = scheduled_runs[0]
+        devices = ", ".join([x[0] for x in scheduled_runs])
+        title = f"Check [dodger_blue1]#{index + 1}.{subindex + 1}[/dodger_blue1] - [red3]ERROR[/red3]"
+        text = f"""Device(s): [cyan3]{devices}[/cyan3]
+Check type: [cyan3]{mode}[/cyan3]
+Check {mode}: [grey70]'[/grey70][cyan3]{mode_command}[/cyan3][grey70]'[/grey70]
+{'Expected results:' if len(check_command.expected_results) > 0 else ''}
+"""
+        for i, er in enumerate(check_command.expected_results):
+            text += f" - {er.description}\n"
+
+        text += f"""
+[red3]An error occured during execution. Please retry the aspect or mark manually.[/red3]
+This may also indicate that there was no output to parse.
+"""
+
+        panel = Group(
+            text,
+            Panel.fit(
+                str(e),
+                title="Error message",
+                padding=(0, 4, 0, 1),
+            ),
+        )
+
+        self.console.print(Panel.fit(panel, title=title))
+
+    def announce_mark_error(
+        self,
+        check_command: configuration.CheckCommand,
+        index: int,
+        subindex: int,
+        scheduled_runs: tuple[str, str, str, list[list[str] | str], bool, bool],
+        e: Exception,
+    ):
+        device, mode, mode_command, _, _, _ = scheduled_runs
+
+        title = f"Check [dodger_blue1]#{index + 1}.{subindex + 1}[/dodger_blue1] - [red3]ERROR[/red3]"
+        text = f"""Device(s): [cyan3]{device}[/cyan3]
+Check type: [cyan3]{mode}[/cyan3]
+Check {mode}: [grey70]'[/grey70][cyan3]{mode_command}[/cyan3][grey70]'[/grey70]
+{'Expected results:' if len(check_command.expected_results) > 0 else ''}
+"""
+        for i, er in enumerate(check_command.expected_results):
+            text += f" - {er.description}\n"
+
+        text += f"""
+[red3]The command executed but marking failed. Please retry the aspect or mark manually.[/red3]
+"""
+
+        panel = Group(
+            text,
+            Panel.fit(
+                str(e),
+                title="Error message",
+                padding=(0, 4, 0, 1),
+            ),
+        )
+
+        self.console.print(Panel.fit(panel, title=title))
+
     def aspect_finish(self) -> Literal["continue", "retry"]:
         choices = [
             Choice("Continue", "continue", shortcut_key="c"),
