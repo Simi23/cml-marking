@@ -6,7 +6,7 @@ from virl2_client.virl2_client import Lab
 import questionary
 from questionary import Choice
 import configuration
-from configuration import Aspect, AspectType
+from configuration import Aspect, AspectType, SubCriterion
 from rich.markdown import Markdown
 import json
 from typing import LiteralString, Literal
@@ -46,6 +46,34 @@ class Menu:
         self.console.line(2)
         choices = [Choice(x.title, x.id) for x in labs]
         result = questionary.select("Choose the lab you want to mark!", choices).ask()
+        return result
+
+    def choose_marking_mode(self):
+        self.console.line(1)
+        choices = [Choice("Beginning", "beginning"), Choice("Select from menu", "menu")]
+        result = questionary.select(
+            "Start marking from beginning or choose aspect?", choices
+        ).ask()
+        return result
+
+    def choose_aspect(
+        self, sub_criteria: list[SubCriterion], start=0, clear=False
+    ) -> tuple[int, int]:
+        if clear:
+            self.console.clear()
+        self.console.line(2)
+        choices = []
+        for sc_index, sc in enumerate(sub_criteria):
+            choices.append(
+                Choice(f"{sc.sc_id} - {sc.name}", False, disabled="Sub Criterion")
+            )
+            choices.extend(
+                [
+                    Choice(f"{x.aspect_id} - {x.description}", (sc_index, i))
+                    for i, x in enumerate(sc.aspects)
+                ]
+            )
+        result = questionary.select("Choose the aspect to mark!", choices).ask()
         return result
 
     def announce_sc(self, sc_name: str):
@@ -162,10 +190,11 @@ Check {mode}: [grey70]'[/grey70][cyan3]{mode_command}[/cyan3][grey70]'[/grey70]
 
         self.console.print(Panel.fit(panel, title=title))
 
-    def aspect_finish(self) -> Literal["continue", "retry"]:
+    def aspect_finish(self) -> Literal["continue", "retry", "menu"]:
         choices = [
             Choice("Continue", "continue", shortcut_key="c"),
             Choice("Rerun aspect", "retry", shortcut_key="r"),
+            Choice("Choose next aspect from menu", "menu", shortcut_key="m"),
         ]
 
         result = questionary.select(

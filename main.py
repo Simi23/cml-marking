@@ -15,16 +15,34 @@ def main():
     menu.main_title()
     chosen_lab_id = menu.choose_labs(client.list_labs())
 
-    print(f"User chose lab {chosen_lab_id}")
-    client.prep_lab_test(chosen_lab_id)
+    with menu.console.status("Preparing the lab to be tested..."):
+        client.prep_lab_test(chosen_lab_id)
+
+    mm = menu.choose_marking_mode()
+
+    i_sc = 0
+    i_aspect = 0
+
+    aspect_skip = False
+    sc_break = False
+
+    if mm == "menu":
+        i_sc, i_aspect = menu.choose_aspect(config.sub_criteria)
+        aspect_skip = True
 
     menu.console.clear()
     menu.console.line(2)
 
-    for sub_criterion in config.sub_criteria:
+    while i_sc < len(config.sub_criteria):
+        sub_criterion = config.sub_criteria[i_sc]
         menu.announce_sc(f"{sub_criterion.sc_id} - {sub_criterion.name}")
         aspect_count = len(sub_criterion.aspects)
-        i_aspect = 0
+
+        if aspect_skip:
+            aspect_skip = False
+        else:
+            i_aspect = 0
+
         is_retry = False
         while i_aspect < aspect_count:
             aspect = sub_criterion.aspects[i_aspect]
@@ -68,9 +86,20 @@ def main():
             if aspect_choice == "retry":
                 is_retry = True
                 continue
+            if aspect_choice == "menu":
+                i_sc, i_aspect = menu.choose_aspect(config.sub_criteria)
+                aspect_skip = True
+                sc_break = True
+                break
 
             i_aspect += 1
             is_retry = False
+
+        if sc_break:
+            sc_break = False
+            continue
+
+        i_sc += 1
     return
 
 
