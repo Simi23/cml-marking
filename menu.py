@@ -1,6 +1,7 @@
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.align import Align
+from rich.markup import escape
 from rich import box
 from virl2_client.virl2_client import Lab
 import questionary
@@ -111,7 +112,7 @@ Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'
             text,
             Panel.fit(
                 (
-                    run_result[3]["output"]
+                    escape(run_result[3]["output"])
                     if check_command.command
                     else json.dumps(run_result[3], indent=4)
                 ),
