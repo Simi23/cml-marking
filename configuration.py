@@ -1,6 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, ValidationError, Field
 from enum import Enum
+import json
 
 
 class CmlConfig(BaseModel):
@@ -65,6 +66,7 @@ class CheckCommand(BaseModel):
     use_cache: Optional[bool] = Field(
         True,
         description="Allow the use of cached previous results (only stored in memory during runtime)",
+        alias="reuse_cache",
     )
     update_cache: Optional[bool] = Field(
         True, description="Update the cache with the result of this command"
@@ -121,11 +123,9 @@ class AppConfig(BaseModel):
 def load_config(path: str) -> AppConfig:
     try:
         with open(path, "r") as f:
-            raw_data = f.read()
+            raw_data = json.load(f)
 
-        # This performs the parsing AND validation
-        # Equivalent to Zod's .parse()
-        config = AppConfig.model_validate_json(raw_data)
+        config = AppConfig(**raw_data)
 
         return config
 
