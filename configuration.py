@@ -49,6 +49,11 @@ class ExpectedResult(BaseModel):
         True, description="Whether to search in the values of the gathered info."
     )
 
+    mark: Optional[str] = Field(
+        None,
+        description="Partial mark for this result. Useful for calculated measurements.",
+    )
+
 
 class CheckCommand(BaseModel):
     device_name: Optional[str] = Field(

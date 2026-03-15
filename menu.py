@@ -106,7 +106,17 @@ Check {run_result[1]}: [grey70]'[/grey70][cyan3]{run_result[2]}[/cyan3][grey70]'
 {'Expected results:' if len(check_command.expected_results) > 0 else ''}
 """
         for i, er in enumerate(check_command.expected_results):
-            text += f" - {result_text[marks[i]]} {er.description}\n"
+            mark_text = (
+                [
+                    f"[bright_black]([/][cadet_blue]{er.mark}[/][bright_black])[/] ",
+                    f"[bright_white]([/][turquoise2]{er.mark}[/][bright_white])[/] ",
+                ]
+                if er.mark
+                else ["", ""]
+            )
+            text += (
+                f" - {result_text[marks[i]]} {mark_text[marks[i]]}{er.description}\n"
+            )
 
         panel = Group(
             text,

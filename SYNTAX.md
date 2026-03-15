@@ -60,3 +60,4 @@
 | **search_filter**   | `List[str] \| str`     |    ❌    | -       | A glob filter to apply on the output of the command. If provided, the search will only happen on the leaf found by the filter.   |
 | **search_in_key**   | `bool`                 |    ❌    | True    | Whether to search in keys of the gathered info.                                                                                  |
 | **search_in_value** | `bool`                 |    ❌    | True    | Whether to search in the values of the gathered info.                                                                            |
+| **mark**            | `str`                  |    ❌    | -       | Marking info (e.g. points) to display next to the expected result.                                                               |
